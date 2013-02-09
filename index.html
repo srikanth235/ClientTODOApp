@@ -1,41 +1,34 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
-<html lang=en>
-  <style type="text/css">
-  body {background: #363; color: #FF0; font-size: large;
-    text-shadow: black 0.2em 0.2em 0.2em}
-
-  body, html {height: 100%; margin: 0; padding: 0}
-
-  #translations {position: absolute;  color: white;
-    text-shadow: none; font-size: small;
-    background: #474; border-radius: 1em; padding: 0 0.5em; margin: auto;
-     width:300px;
-     height:300px;
-     top:50%;
-     left:50%;
-     margin:-150px 0 0 -150px; }
-  </style>
- <body>  
- 
- <div class=section id=translations>
-   <table>
-   <tr>
-   <td>
-   Empty space
-   </td>
-   <td>
-   <input type="text"/>
-   </td>
-   </tr>
-   <tr>
-   <td>
-   Contains the task list in tree view
-   </td>
-   <td>
-   Displays the taks is the current list.
-   </td>
-   </tr>
-   </table>
- </div> 
- </body>
- </html>
+<html>
+<head>
+<link rel = "stylesheet" href = "stylesheet.css">
+</head>
+<body>
+<div class="container">
+    <div class = "top">
+        <div class = "lhs-top-box">  
+        </div>
+        <div class = "rhs-top-box">
+            <div class = "add-item">
+                <input class="user-input" type="text">
+                <input type = "button" value="Add Task">
+            </div>     
+        </div>
+    </div>
+    <div class = "bottom">
+        <div class = "lhs-bottom-box"> 
+            <ul>
+                <li> List 1
+                <li> List 2
+                <li> List 3
+            </ul> 
+        </div>
+        <div class = "rhs-bottom-box">
+            <input type="checkbox" name="Task1" value="Task1"/> Task 1<br> <hr>
+            <input type="checkbox" name="Task2" value="Task2"/> Task 2<br> <hr>
+            <input type="checkbox" name="Task3" value="Task3"/> Task 3<br> <hr>
+        </div>                
+        </div>
+    </div>
+</div>
+</body>
+</html>
