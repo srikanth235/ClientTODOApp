@@ -14,7 +14,7 @@ function getTasksHTMLRepresentation() {
     var tasks = Object.keys(taskList).sort(function(a, b) {return taskList[a] - taskList[b];});
     for(var i = 0; i < tasks.length; i++)
         result = result + '<tr><td><input type="checkbox" class = "task" name="'+tasks[i]+'"id="'+tasks[i]+'"/>'+ tasks[i] +'</td></tr>';
-    alert(result);
+    
     return result;
 }
 
@@ -33,12 +33,12 @@ function displayDeleteMenu() {
     
     $("#delete-selected").on("click", function() {
         var tasks = $('.task:checkbox');
-        alert(tasks.length);
         for(var i = 0; i < tasks.length; i++)
-            if(tasks[i].value === "on") { 
+            if(tasks[i].checked === true) { 
                 deleteTask(tasks[i].name);
             }
         resetDisplayedTasksList();          
+        displayNormalTextBox();
     }); 
 }
 
@@ -47,6 +47,7 @@ function displayNormalTextBox() {
         '<input id="user-input" type = "text" value = ""/>'
         +     '<input id="add-task" type = "button" value="Add Task"/>');
 }
+
 
 function resetDisplayedTasksList() {
     var modifiedHTML = getTasksHTMLRepresentation();
@@ -72,7 +73,5 @@ $(document).ready(function() {
             displayNormalTextBox();
         }
     });
-
-
     
 });
