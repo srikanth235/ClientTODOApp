@@ -13,7 +13,7 @@ function getTasksHTMLRepresentation() {
     // comparator for sorting is based on due dates of tasks 
     var tasks = Object.keys(taskList).sort(function(a, b) {return taskList[a] - taskList[b];});
     for(var i = 0; i < tasks.length; i++)
-        result = result + '<tr><td><input type="checkbox" class = "task" name="'+tasks[i]+'"id="'+tasks[i]+'"/>'+ tasks[i] +'  ' + taskList[tasks[i]]+ '</td></tr>';
+        result = result + '<tr><td><input type="checkbox" class = "task" name="'+tasks[i]+'"id="'+tasks[i]+'"/>'+ tasks[i] +'</td><td class="date">' + taskList[tasks[i]]+ '	</td></tr>';
     return result;
 }
 
