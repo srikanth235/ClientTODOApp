@@ -56,9 +56,7 @@ div.container {
 }
 /* skeleton layout for dividing the screen into 4 boxes end here */
 #user-input{
-    width: 80%;
-    display: table-cell;
-    vertical-align: bottom;
+    width: 70%;
     margin: 0; 
 }
 
