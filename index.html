@@ -1,6 +1,8 @@
 <html>
 <head>
 <link rel = "stylesheet" href = "stylesheet.css">
+<script src="http://cs498stk.appspot.com/jquery/1.2.0/jquery-1.8.2.min.js"></script>
+<script src="domevents.js"></script>
 </head>
 <body>
 <div class="container">
@@ -9,8 +11,8 @@
         </div>
         <div class = "rhs-top-box">
             <div class = "add-item">
-                <input class="user-input" type="text">
-                <input type = "button" value="Add Task">
+                <input id="user-input" type = "text" value = ""/>
+                <input id="add-task" type = "button" value="Add Task"/>
             </div>     
         </div>
     </div>
@@ -23,12 +25,13 @@
             </ul> 
         </div>
         <div class = "rhs-bottom-box">
-            <input type="checkbox" name="Task1" value="Task1"/> Task 1<br> <hr>
-            <input type="checkbox" name="Task2" value="Task2"/> Task 2<br> <hr>
-            <input type="checkbox" name="Task3" value="Task3"/> Task 3<br> <hr>
+            <table id="task-list" >
+                <tr><td><input type="checkbox" name="Task1" value="Task1"/> Task 1 </td></tr>
+                <tr><td><input type="checkbox" name="Task2" value="Task2"/> Task 2 </td></tr>
+                <tr><td><input type="checkbox" name="Task3" value="Task3"/> Task 3 </td><tr>
+            </table>
         </div>                
         </div>
     </div>
-</div>
 </body>
 </html>
