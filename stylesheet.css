@@ -7,6 +7,7 @@ div.container {
     border-radius: 0.5em;
     padding: 0;
   }
+
 /* skeleton layout for dividing the screen into 4 boxes start here */
 .top, .bottom{
     margin: 1% 1% 1% 1%;
@@ -14,12 +15,15 @@ div.container {
     width: 98%; 
     border: 0%;
 }
+
 .top {
     height: 18%;
 }
+
 .bottom {
     height: 78%
 }
+
 .lhs-top-box, .rhs-top-box {
     border: 0.5px solid gray;
     border-radius: 0.5em;
@@ -29,14 +33,17 @@ div.container {
     margin: 0%;
     background-color: #f5f5f5
 }
+
 .lhs-top-box {
     margin-right: 2%;
     width: 30%;
 }
+
 .rhs-top-box {
     width: 67%;
     background-color: white;
 }
+
 .lhs-bottom-box, .rhs-bottom-box {
     border: 0.5px solid gray;
     border-radius: 0.5em;
@@ -46,10 +53,12 @@ div.container {
     height: 95%;
     background-color: white;
 }
+
 .lhs-bottom-box { 	
     margin-right: 2%;
     width: 30%;
 }
+
 .rhs-bottom-box {
     border: 0;
     width: 67%;
@@ -57,6 +66,8 @@ div.container {
     background-color: white;
 }
 /* skeleton layout for dividing the screen into 4 boxes end here */
+
+/* Layout for right hand side boxes start here */
 #user-input{
     width: 70%;
     margin: 0; 
@@ -75,7 +86,6 @@ div.container {
     border-collapse: collapse;
 }
 
-
 #task-list {
     background-color: #f5f5f5;
     width: 100%;    
@@ -85,7 +95,7 @@ div.container {
     font-size: 75%;
     line-height: 50%;
     color: #222;
-    font-family: arial, sans-serif;
+    font-family: verdana,helvetica,arial,sans-serif;
     padding: 1%;
     border-right: 0px;
     border-left: 0px;
@@ -99,22 +109,48 @@ div.container {
     width: 20%; 
 }
 
-input[type="button"]
-{
-    text-shadow:0 1px;
-    color: #444;
-}
-
+/* Layout for left hand side boxes start here */
 #global-list {
-    border-collapse:separate;
-    border-spacing: 0.2em;
+    border-collapse: separate;
+    border-bottom-spacing: 0.2em;
     width: 100%;
+    font-family: verdana,helvetica,arial,sans-serif;
+    font-size: 13px;
 }
 
 #global-list td {
     margin: 0px;
-    border:1px;
+    border: 1px;
     background-color: #f5f5f5;
     border-color: #e5e5e5;
-    border-radius: 0.5em;
+    border-radius: 0.5em; 
+    padding: 0.25em;   
+}
+
+#add-list {
+    color: #999;
+}
+
+#add-list:hover {
+    color: #625f5f;
+}
+
+.delete-list {
+    font-size: 0.9em;
+    font-weight: lighter;
+    border-left: dashed
+}
+
+.delete-list:hover {
+    font-size: 1em; 
+    font-weight: lighter;
+}
+/* Layout for left hand side boxes start here */
+
+/* CSS selectors effecting the entire application */
+input[type=button] {
+    font-size: 65%;
+    color: #444;
+    font-weight: bold;
+    font-family: verdana,helvetica,arial,sans-serif;
 }

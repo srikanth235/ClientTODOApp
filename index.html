@@ -9,7 +9,11 @@
 <body>
 <div class="container">
     <div class = "top">
-        <div class = "lhs-top-box">  
+        <div class = "lhs-top-box">
+            <div class = "data-functions" style=" width: 60%; height: 60%; margin:5% 20% 20% 20%">
+                <input id = "import" type = "button" id = "import-data" value = "Import"/>
+                <input id = "export" type = "button" id = "export-data" value = "Export"/>
+            </div>  
         </div>
         <div class = "rhs-top-box">
                 <input id="user-input" type = "text" value = ""/>
@@ -20,9 +24,7 @@
     <div class = "bottom">
         <div class = "lhs-bottom-box">
             <table id= "global-list">
-                <tr><td> List 1 </td></tr>
-                <tr><td> List 2 </td></tr>
-                <tr><td> List 3 </td></tr>
+                <!-- Empty list. Will be populated by js -->
             </table> 
         </div>
         <div class = "rhs-bottom-box">

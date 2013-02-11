@@ -1,4 +1,5 @@
-allTasks = {"list1":{Task3 : new Date().toDateString(), Task5: new Date().toDateString(), Task4 : new Date().toDateString()}};
+allTasks = {"list1":{Task3 : {date:new Date().toDateString()}, Task5: {date:new Date().toDateString()}, Task4 : {date:new Date().toDateString()}}};
+/** Helper functions start here. */
 function getCurrentListIdentifier() {
     return "list1";
 }
@@ -11,14 +12,48 @@ function getTasksHTMLRepresentation() {
     var result= '';
     var taskList = allTasks[getCurrentListIdentifier()];
     // comparator for sorting is based on due dates of tasks 
-    var tasks = Object.keys(taskList).sort(function(a, b) {return taskList[a] - taskList[b];});
+    var tasks = Object.keys(taskList).sort(function(a, b) {
+                                               return taskList[a] - taskList[b];
+                                           });
     for(var i = 0; i < tasks.length; i++)
-        result = result + '<tr><td><input type="checkbox" class = "task" name="'+tasks[i]+'"id="'+tasks[i]+'"/>'+ tasks[i] +'</td><td class="date">' + taskList[tasks[i]]+ '	</td></tr>';
+        result = result + '<tr><td><input type="checkbox" class = "task" name="'
+                 + tasks[i]+'"id="'+tasks[i]+'"/>'+ tasks[i] +'</td><td class="date">' 
+                 + getDateStringForDisplay(taskList[tasks[i]][date])
+                 + '</td></tr>';
     return result;
 }
 
-function addTask(taskDescription) {
-    var dueDate = $("#datepicker").val();
+function getListsHTMLRepresentation() {
+    var result= '';
+    // comparator for sorting is based on names of the list
+    var listNames = Object.keys(allTasks).sort(function(a, b) {
+                                               return a < b;
+                                           });
+
+    for(var i = 0; i < listNames.length; i++)
+        result = result + '<tr><td>'
+                 + '<span class="delete-list"> x </span>'
+                 + listNames[i]
+                 + '</td></tr>';
+
+    result = result + '<tr><td id="add-list"> + Add a list</tr></td>';
+    return result;
+}
+
+function deleteTask(taskDescription) {
+    delete (allTasks[getCurrentListIdentifier()][taskDescription]);
+}
+
+function markAsDone(taskDescription) {
+    (allTasks[getCurrentListIdentifier()][taskDescription]).completed = true;
+    alert(taskDescription + (allTasks[getCurrentListIdentifier()][taskDescription]).completed);
+}
+
+function isCompleted(taskDescription) {
+    return allTasks[getCurrentListIdentifier()][taskDescription].completed === true;
+}
+
+function getDateStringForDisplay(dueDate) {
     var month = "Jan";
     switch(dueDate.substring(0, 2)) {
         case "01": 
@@ -59,20 +94,52 @@ function addTask(taskDescription) {
              break; 
     }
     dueDate = month + " " + dueDate.substring(3,5);
+    return dueDate;
+}
+/** Helper functions end here. */
+
+/** Functions for displaying HTML elements start here*/
+function loadDatePicker() {
+    $(function() {
+        $("#datepicker").datepicker({
+            showOn: "button",
+            buttonImage: "images/calendar.gif",
+            buttonImageOnly: true
+        });
+    });
+}
+
+function displayNormalTextBox() {
+    $(".rhs-top-box").html(
+        '<input id="user-input" type = "text" value = ""/> '
+        +    '<input id="datepicker" type = "hidden"/> '
+        +    '<input id="add-task" type = "button" value="Add Task"/>');
+    loadDatePicker();
+}
+
+function renderTasks() {
+    var content = getTasksHTMLRepresentation();
+    var e = $('#task-list').html(content);
+}
+
+function renderLists() {
+    var content = getListsHTMLRepresentation();
+    var e = $('#global-list').html(content);
+}
+
+function resetDisplayedTasksList() {
+    var modifiedHTML = getTasksHTMLRepresentation();
+    var e = $('#task-list').html(modifiedHTML);
+}
+
+function resetDisplayedGlobalList() {
+    var modifiedHTML = getGlobalListHTMLRepresentation();
+    var e = $('#global-list').html(modifiedHTML);
+}
+
+function addTask(taskDescription) {
+    var dueDate = $("#datepicker").val();
     (allTasks[getCurrentListIdentifier()])[taskDescription] = dueDate;
-}
-
-function deleteTask(taskDescription) {
-    delete (allTasks[getCurrentListIdentifier()][taskDescription]);
-}
-
-function markAsDone(taskDescription) {
-    (allTasks[getCurrentListIdentifier()][taskDescription]).completed = true;
-    alert(taskDescription + (allTasks[getCurrentListIdentifier()][taskDescription]).completed);
-}
-
-function isCompleted(taskDescription) {
-    return allTasks[getCurrentListIdentifier()][taskDescription].completed === true;
 }
 
 function displayDeleteMenu() {
@@ -105,7 +172,9 @@ function displayDeleteMenu() {
         addTaskActionListener();
     }); 
 }
+/* Functions for displaying HTML elements end here*/
 
+/* Functions for adding listeners start here */
 function addTaskActionListener() {
    $(".task").on("click", function() {
         if(isSomeTaskSelected() === "on") {
@@ -114,34 +183,18 @@ function addTaskActionListener() {
             displayNormalTextBox();
         }
     });
-}
-function displayNormalTextBox() {
-    $(".rhs-top-box").html(
-        '<input id="user-input" type = "text" value = ""/>'
-        +    '<input id="datepicker" type = "hidden"/>'
-        +    '<input id="add-task" type = "button" value="Add Task"/>');
-    loadDatePicker();
-}
+} 
 
-function resetDisplayedTasksList() {
-    var modifiedHTML = getTasksHTMLRepresentation();
-    var e = $('#task-list').html(modifiedHTML);
-}
-
-function loadDatePicker() {
-    $(function() {
-        $( "#datepicker" ).datepicker({
-            showOn: "button",
-            buttonImage: "images/calendar.gif",
-            buttonImageOnly: true
-        });
+function addListActionListener() {
+   $("#add-list").on("click", function() {
+         alert("here");
     });
 }
+/* Functions for adding listeners end here */ 
 
 $(document).ready(function() { 
-    var content = getTasksHTMLRepresentation();
-    var e = $('#task-list').html(content);
-   
+    renderLists();
+    renderTasks();
     $("#add-task").on("click", function() {
             var taskDescription = $("#user-input").val();
             if(taskDescription.length > 0) {
@@ -149,7 +202,7 @@ $(document).ready(function() {
                 resetDisplayedTasksList();      
             }  
     });
-
     addTaskActionListener();
+    addListActionListener();
     loadDatePicker();
 });
