@@ -1,7 +1,18 @@
-allTasks = {"list1":{Task3 : {date:new Date().toDateString()}, Task5: {date:new Date().toDateString()}, Task4 : {date:new Date().toDateString()}}};
+globalListIdentifier = "list1";
 /** Helper functions start here. */
+function loadLocalStorage() {
+    localStorage.setItem("globalList", 
+                          {
+                            "list1":{Task1 : {date: new Date().toDateString(),done: false},  
+                            "list2":{Task2 : {date:new Date().toDateString()}}}
+                        );
+}
+function getGlobalList() {
+    return localStorage.getItem("globalList");
+}
+
 function getCurrentListIdentifier() {
-    return "list1";
+    return globalListIdentifier;
 }
 
 function isSomeTaskSelected() {
@@ -10,33 +21,50 @@ function isSomeTaskSelected() {
 
 function getTasksHTMLRepresentation() {
     var result= '';
-    var taskList = allTasks[getCurrentListIdentifier()];
+    var taskList = (getGlobalList()[getCurrentListIdentifier()];
+
     // comparator for sorting is based on due dates of tasks 
     var tasks = Object.keys(taskList).sort(function(a, b) {
-                                               return taskList[a] - taskList[b];
+                                               return taskList[a]["date"] > taskList[b]["date"];
                                            });
-    for(var i = 0; i < tasks.length; i++)
-        result = result + '<tr><td><input type="checkbox" class = "task" name="'
+    for(var i = 0; i < tasks.length; i++) {
+        var className;
+        if(isCompleted(tasks[i])) {
+            className = "completed-task-row";
+        } else {
+            className = "incompleted-task-row";
+        }
+        result = result + '<tr class="'+className+'"><td><input type="checkbox" class = "task" name="'
                  + tasks[i]+'"id="'+tasks[i]+'"/>'+ tasks[i] +'</td><td class="date">' 
-                 + getDateStringForDisplay(taskList[tasks[i]][date])
+                 + getDateStringForDisplay(taskList[tasks[i]]["date"])
                  + '</td></tr>';
+    }
     return result;
+}
+
+function getHTMLForAddList() {
+    return '<tr id="add-list"><td> + Add a list</td></tr>';
+}
+
+function getHTMLForNewList(listName) {
+   var result = '<tr><td class = "list-name">'
+            + '<span class="delete-list"> x </span>'
+            + listName
+            + '</td></tr>';
+   return result;      
 }
 
 function getListsHTMLRepresentation() {
     var result= '';
     // comparator for sorting is based on names of the list
     var listNames = Object.keys(allTasks).sort(function(a, b) {
-                                               return a < b;
+                                               return a > b;
                                            });
-
-    for(var i = 0; i < listNames.length; i++)
-        result = result + '<tr><td>'
-                 + '<span class="delete-list"> x </span>'
-                 + listNames[i]
-                 + '</td></tr>';
-
-    result = result + '<tr><td id="add-list"> + Add a list</tr></td>';
+  
+    for(var i = 0; i < listNames.length; i++) {
+        result = result + getHTMLForNewList(listNames[i]);
+    }
+    result = result + getHTMLForAddList();
     return result;
 }
 
@@ -45,12 +73,11 @@ function deleteTask(taskDescription) {
 }
 
 function markAsDone(taskDescription) {
-    (allTasks[getCurrentListIdentifier()][taskDescription]).completed = true;
-    alert(taskDescription + (allTasks[getCurrentListIdentifier()][taskDescription]).completed);
+    (allTasks[getCurrentListIdentifier()][taskDescription])["done"] = true;
 }
 
 function isCompleted(taskDescription) {
-    return allTasks[getCurrentListIdentifier()][taskDescription].completed === true;
+    return allTasks[getCurrentListIdentifier()][taskDescription]["done"] === true;
 }
 
 function getDateStringForDisplay(dueDate) {
@@ -161,7 +188,6 @@ function displayDeleteMenu() {
                             deleteTask(tasks[i].name);
                         break;
                     case "delete-completed":
-                        alert(isCompleted(tasks[i].name));
                         if(isCompleted(tasks[i].name))  
                             deleteTask(tasks[i].name);
                         break; 
@@ -183,15 +209,43 @@ function addTaskActionListener() {
             displayNormalTextBox();
         }
     });
-} 
+}
 
-function addListActionListener() {
-   $("#add-list").on("click", function() {
-         alert("here");
+function addNewListListener() {
+    $("#add-list").on("click", function() {
+         $('#add-list').replaceWith('<tr id="new-list"><td><input id="new-list-name" type="text" value="New List" /></td></tr>'); 
+         $('#new-list-name').select();
+         addInputListNameActionListener();
+    });
+    
+}
+
+function addInputListNameActionListener() {
+    $("#new-list-name").on("blur", function() {
+	 var listName = $('#new-list-name').val();
+         $('#new-list').replaceWith(getHTMLForNewList(listName));
+         $(getHTMLForAddList()).appendTo('#global-list');
+         addNewListListener(); 
+         addSelectListListener();
     });
 }
-/* Functions for adding listeners end here */ 
 
+function addSelectListListener() {
+    $(".list-name").on("click", function() {
+         $(".list-name").removeClass("selected-list");
+         $(this).addClass("selected-list");
+         globalListIdentifier = this.textContent.substring(2).trim();
+         resetDisplayedTasksList(); 
+    });
+}
+
+function addDeleteListListener() {
+    $(".delete-list").on("click", function(event) {
+         event.stopPropagation();
+    });
+}
+
+/* Functions for adding listeners end here */ 
 $(document).ready(function() { 
     renderLists();
     renderTasks();
@@ -203,6 +257,8 @@ $(document).ready(function() {
             }  
     });
     addTaskActionListener();
-    addListActionListener();
+    addNewListListener();
+    addSelectListListener();
+    addDeleteListListener();
     loadDatePicker();
 });
