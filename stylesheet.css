@@ -163,14 +163,18 @@ div.container {
 
 
 .delete-list {
-    font-size: 0.9em;
+    font-size: 0.75em;
     font-weight: lighter;
+    height: 1em;
+    width: 1em;
+    border-radius: 25%;
+    padding: 0;
 }
 
 .delete-list:hover {
-    font-size: 1em; 
+    font-size: 0.9em; 
     background-color: gray;
-    font-color: white;
+    color: white;
 }
 /* Layout for left hand side boxes end here */
 
