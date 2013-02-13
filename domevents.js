@@ -1,9 +1,13 @@
 ls = localStorage;
-globalListIdentifier = "list1";
-globalList = {};
 /** Local Storage functions start here. */
 function initGlobalList() {
-   globalList = JSON.parse(ls.getItem("globalList"));
+    globalListIdentifier = "Default";
+    if("globalList" in ls) {
+        globalList = JSON.parse(ls.getItem("globalList"));
+    } else {
+        globalList = {"Default":null};
+        updateLocalStorage();
+    }
 }
 
 function getGlobalList() {
@@ -15,15 +19,11 @@ function updateLocalStorage() {
 }
 
 function loadLocalStorage() {
-    ls.setItem("globalList", 
-               JSON.stringify(
-               {
-                  "list1":{"Task1" : {"date": new Date().toDateString(), "done": false}},
-               }));
+    globalList = JSON.parse(ls.getItem("globalList"));
 }
 
 function addList(listDescription) {
-    globalList()[listDescription] = null;
+    globalList[listDescription] = {};
     updateLocalStorage();
 }
 
@@ -34,9 +34,8 @@ function deleteList(listDescription) {
 
 function addTask(taskDescription) {    
     var dueDate = $("#datepicker").val();
-    if(typeof(getGlobalList()[getCurrentListIdentifier()]) === "undefined") {
+    if(globalList[getCurrentListIdentifier()] === null)
         globalList[getCurrentListIdentifier()] = {};
-    }
     globalList[getCurrentListIdentifier()][taskDescription] = {"date": dueDate, "done": false};
     updateLocalStorage();
 }
@@ -55,6 +54,10 @@ function markAsDone(taskDescription) {
 /** Local Storage functions end here. */
 
 /** Helper functions start here. */
+function selectDefaultList() {
+	$(".list-name").click();
+}
+
 function getCurrentListIdentifier() {
     return globalListIdentifier;
 }
@@ -65,8 +68,7 @@ function isSomeTaskSelected() {
 
 function getTasksHTMLRepresentation() {
     var result= '';
-    if(typeof(getGlobalList()) === "undefined" || 
-       typeof(getGlobalList()[getCurrentListIdentifier()]) === "undefined") {
+    if(!(getCurrentListIdentifier() in getGlobalList())) {
           return '';
     }
     var taskList = (getGlobalList())[getCurrentListIdentifier()];
@@ -95,8 +97,13 @@ function getHTMLForAddList() {
 }
 
 function getHTMLForNewList(listName) {
+   if(listName != "Default")
+       className = "delete-list";
+   else 
+       className = "default-list";
+
    var result = '<tr><td class = "list-name">'
-            + '<span class="delete-list"> x </span>'
+            + '<span class='+className+'> x </span>'
             + listName
             + '</td></tr>';
    return result;      
@@ -105,11 +112,6 @@ function getHTMLForNewList(listName) {
 function getListsHTMLRepresentation() {
     var result= '';
     // comparator for sorting is based on names of the list
-    if(getGlobalList() == null) {
-          $('#global-list').hide();
-          return;
-    }
-    $('#global-list').show();
     var listNames = Object.keys(getGlobalList()).sort(function(a, b) {
                                                return a > b;
                                            });
@@ -185,8 +187,9 @@ function displayNormalTextBox() {
     $(".rhs-top-box").html(
         '<input id="user-input" type = "text" value = ""/> '
         +    '<input id="datepicker" type = "hidden"/> '
-        +    '<input id="#add-task" type = "button" value="Add Task"/>');
+        +    '<input id="add-task" type = "button" value="Add Task"/>');
     loadDatePicker();
+    addSelectListListener();         
 }
 
 function renderTasks() {
@@ -203,6 +206,7 @@ function resetDisplayedTasksList() {
     var modifiedHTML = getTasksHTMLRepresentation();
     var e = $('#task-list').html(modifiedHTML);
     addSelectTaskActionListener();
+    addTaskActionListener();
 }
 
 function resetDisplayedGlobalList() {
@@ -237,7 +241,12 @@ function displayDeleteMenu() {
         resetDisplayedTasksList();          
         displayNormalTextBox();
         addSelectTaskActionListener();
+        addTaskActionListener(); 
     }); 
+}
+
+function populateDefaultText() {
+    $('#jsonstring').val("Please provide json string and click import...");
 }
 /* Functions for displaying HTML elements end here*/
 
@@ -254,27 +263,36 @@ function addTaskActionListener() {
 }
 
 function addSelectTaskActionListener() {
-   $(".task").on("click", function() {
-        if(isSomeTaskSelected() === "on") {
+   $('.task:checkbox').on("click", function() {
+        var count = 0; 
+        event.stopPropagation();
+        var tasks = $('.task:checkbox');
+        for(var i = 0; i < tasks.length; i++)
+	    if($(tasks[i]).is(':checked') === true) {
+                count++;
+        }
+        if(count > 0) {
             displayDeleteMenu();
         } else {
             displayNormalTextBox();
-        }
-    });
+            addTaskActionListener(); 
+        } 
+   });
 }
 
 function addNewListListener() {
-    $("#add-list").on("click", function() {
+    $("#add-list").on("click", function() {	
          $('#add-list').replaceWith('<tr id="new-list"><td><input id="new-list-name" type="text" value="New List" /></td></tr>'); 
          $('#new-list-name').select();
-         addInputListNameActionListener();
-    });
-    
+         addInputListNameActionListener();     
+         addDeleteListListener();
+    });    
 }
 
 function addInputListNameActionListener() {
     $("#new-list-name").on("blur", function() {
 	 var listName = $('#new-list-name').val();
+         addList(listName);
          $('#new-list').replaceWith(getHTMLForNewList(listName));
          $(getHTMLForAddList()).appendTo('#global-list');
          addNewListListener(); 
@@ -290,15 +308,73 @@ function addSelectListListener() {
          globalListIdentifier = this.textContent.substring(2).trim();
          resetDisplayedTasksList(); 
 	 addSelectTaskActionListener();
+         addTaskActionListener(); 
     });
 }
 
 function addDeleteListListener() {
     $(".delete-list").on("click", function(event) {
          event.stopPropagation();
+         var selectedList = this.parentNode.textContent.substring(2).trim();
+         deleteList(selectedList);
+         $(this.parentNode.parentNode).remove();
     });
 }
 
+function addImportActionListener() {
+    $("#import").on("click", function() {
+         var json = $("#jsonstring").val();
+         var importedLists = JSON.parse(json);
+         alert(importedLists);
+         for(var list in importedLists) {
+             if (importedLists.hasOwnProperty(list)) {
+                 alert(list);
+                 if(!(list in globalList)) {
+                     alert("New List");
+                     globalList[list] = importedLists[list];
+                 }
+                 for(var task in list) {
+                     if(list.hasOwnProperty(task)) {
+                        if(!(task in globalList[list]))
+                            globalList[list][task] = importedLists[list][task]; 
+                     }
+                 }
+             }
+         }
+         renderLists();
+         renderTasks();
+         addSelectTaskActionListener();
+         addNewListListener();
+         //addDeleteListListener();
+    addSelectListListener();
+    addTaskActionListener();
+    addImportActionListener();
+    addExportActionListener();
+    addJSONStringListener();
+    populateDefaultText();
+    loadDatePicker();
+    selectDefaultList();
+    });
+
+}
+
+function addExportActionListener() {
+    $("#export").on("click", function() {
+         alert("All tasks across all lists in JSON format is:" + JSON.stringify(getGlobalList()));
+    });
+}
+
+function addJSONStringListener() {
+    $("#jsonstring").on("focus", function() {
+         $(this).val("");
+    });
+
+    $("#jsonstring").on("blur", function() {
+         var string = $("#jsonstring").val();
+         if(string === "")
+            $(this).val("Please provide json string and click import...");
+    });
+}
 /* Functions for adding listeners end here */ 
 $(document).ready(function() { 
     loadLocalStorage();
@@ -307,8 +383,13 @@ $(document).ready(function() {
     renderTasks();
     addSelectTaskActionListener();
     addNewListListener();
-    addSelectListListener();
     addDeleteListListener();
+    addSelectListListener();
     addTaskActionListener();
+    addImportActionListener();
+    addExportActionListener();
+    addJSONStringListener();
+    populateDefaultText();
     loadDatePicker();
+    selectDefaultList();
 });

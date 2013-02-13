@@ -8,6 +8,9 @@ div.container {
     padding: 0;
   }
 
+.body {
+    overflow: scroll;
+}
 /* skeleton layout for dividing the screen into 4 boxes start here */
 .top, .bottom{
     margin: 1% 1% 1% 1%;
@@ -162,13 +165,13 @@ div.container {
 }
 
 
-.delete-list {
+.delete-list .default-list{
     font-size: 0.75em;
     font-weight: lighter;
     height: 1em;
     width: 1em;
-    border-radius: 25%;
-    padding: 0;
+    -webkit-border-radius: 0.5em; 
+    -moz-border-radius: 0.5em;
 }
 
 .delete-list:hover {
@@ -176,6 +179,18 @@ div.container {
     background-color: gray;
     color: white;
 }
+
+#jsonstring {
+    font-size: 0.6em;
+    color: #999;
+    width: 95%;
+}
+
+#jsonstring:focus {
+    font-size: 0.6em;
+    color: black;
+}
+
 /* Layout for left hand side boxes end here */
 
 /* CSS selectors effecting the entire application */
